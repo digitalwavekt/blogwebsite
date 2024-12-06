@@ -1,0 +1,59 @@
+---
+import Layout from '../layouts/Layout.astro';
+import BlogCard from '../components/blog/BlogCard.astro';
+import CategoryList from '../components/CategoryList.astro';
+import NewsSection from '../components/NewsSection.astro';
+import { prisma } from '../lib/prisma';
+
+const blogs = await prisma.blog.findMany({
+  include: {
+    author: true,
+    category: true,
+    _count: {
+      select: {
+        comments: true,
+        likes: true,
+        savedBy: true
+      }
+    }
+  },
+  orderBy: {
+    createdAt: 'desc'
+  },
+  take: 10
+});
+
+const formatBlogData = (blog: any) => ({
+  title: blog.title,
+  excerpt: blog.content.substring(0, 150) + '...',
+  category: blog.category.name,
+  author: blog.author.name,
+  imageUrl: blog.imageUrl,
+  metrics: {
+    views: blog.views,
+    likes: blog._count.likes,
+    comments: blog._count.comments,
+    shares: blog.shares
+  },
+  href: `/blog/${blog.id}`
+});
+---
+
+<Layout title="Blog Platform">
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+      <div class="lg:col-span-3">
+        <h1 class="text-3xl font-bold mb-8">Latest Posts</h1>
+        <div class="grid gap-8 md:grid-cols-2">
+          {blogs.map((blog) => (
+            <BlogCard {...formatBlogData(blog)} />
+          ))}
+        </div>
+      </div>
+      <div class="lg:col-span-1 space-y-6">
+        <CategoryList />
+        <NewsSection />
+      </div>
+    </div>
+  </main>
+</Layout>

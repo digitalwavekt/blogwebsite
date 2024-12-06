@@ -1,0 +1,54 @@
+---
+import { BlogMetrics } from './BlogMetrics';
+import { calculateReadTime } from '../../lib/utils/metrics';
+import type { ComponentProps } from 'astro/types';
+
+interface Props {
+  title: string;
+  excerpt: string;
+  category: string;
+  author: string;
+  imageUrl?: string;
+  metrics: ComponentProps<typeof BlogMetrics>;
+  href: string;
+}
+
+const { 
+  title, 
+  excerpt, 
+  category, 
+  author, 
+  imageUrl, 
+  metrics,
+  href 
+} = Astro.props;
+
+const readTime = calculateReadTime(excerpt);
+---
+
+<article class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+  {imageUrl && (
+    <img 
+      src={imageUrl} 
+      alt={title} 
+      class="w-full h-48 object-cover"
+      loading="lazy"
+    />
+  )}
+  <div class="p-6">
+    <div class="flex items-center justify-between mb-2">
+      <span class="text-sm text-blue-600 font-semibold">{category}</span>
+      <span class="text-sm text-gray-500">{readTime} min read</span>
+    </div>
+    <h2 class="text-xl font-bold mb-2">
+      <a href={href} class="hover:text-blue-600 transition-colors">
+        {title}
+      </a>
+    </h2>
+    <p class="text-gray-600 mb-4">{excerpt}</p>
+    <div class="flex items-center justify-between">
+      <span class="text-sm text-gray-500">By {author}</span>
+      <BlogMetrics client:visible {...metrics} />
+    </div>
+  </div>
+</article>

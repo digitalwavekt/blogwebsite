@@ -1,0 +1,21 @@
+---
+import { prisma } from '../lib/prisma';
+
+const categories = await prisma.category.findMany();
+---
+
+<div class="bg-white rounded-lg shadow-md p-4">
+  <h2 class="text-lg font-semibold mb-4">Categories</h2>
+  <ul class="space-y-2">
+    {categories.map((category) => (
+      <li>
+        <a
+          href={`/category/${category.id}`}
+          class="text-gray-700 hover:text-blue-600 transition-colors"
+        >
+          {category.name}
+        </a>
+      </li>
+    ))}
+  </ul>
+</div>

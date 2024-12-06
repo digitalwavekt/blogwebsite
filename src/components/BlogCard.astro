@@ -1,0 +1,40 @@
+---
+interface Props {
+  title: string;
+  excerpt: string;
+  category: string;
+  author: string;
+  imageUrl?: string;
+  views: number;
+  likes: number;
+  comments: number;
+  shares: number;
+  href: string;
+}
+
+const { title, excerpt, category, author, imageUrl, views, likes, comments, shares, href } = Astro.props;
+---
+
+<article class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+  {imageUrl && (
+    <img src={imageUrl} alt={title} class="w-full h-48 object-cover" />
+  )}
+  <div class="p-6">
+    <span class="text-sm text-blue-600 font-semibold">{category}</span>
+    <h2 class="mt-2 text-xl font-bold">
+      <a href={href} class="hover:text-blue-600 transition-colors">
+        {title}
+      </a>
+    </h2>
+    <p class="mt-2 text-gray-600">{excerpt}</p>
+    <div class="mt-4 flex items-center justify-between">
+      <span class="text-sm text-gray-500">By {author}</span>
+      <div class="flex space-x-4 text-sm text-gray-500">
+        <span title="Views"><i class="fas fa-eye"></i> {views}</span>
+        <span title="Likes"><i class="fas fa-heart"></i> {likes}</span>
+        <span title="Comments"><i class="fas fa-comment"></i> {comments}</span>
+        <span title="Shares"><i class="fas fa-share"></i> {shares}</span>
+      </div>
+    </div>
+  </div>
+</article>

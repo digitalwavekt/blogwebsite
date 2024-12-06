@@ -1,0 +1,85 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(auto()) @map("_id") @db.ObjectId
+  email         String    @unique
+  name          String
+  password      String
+  blogs         Blog[]
+  comments      Comment[]
+  likes         Like[]
+  savedBlogs    SavedBlog[]
+  preferences   UserPreference?
+  createdAt     DateTime  @default(now())
+}
+
+model Blog {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  title       String
+  content     String
+  imageUrl    String?
+  authorId    String    @db.ObjectId
+  author      User      @relation(fields: [authorId], references: [id])
+  category    Category  @relation(fields: [categoryId], references: [id])
+  categoryId  String    @db.ObjectId
+  views       Int       @default(0)
+  comments    Comment[]
+  likes       Like[]
+  savedBy     SavedBlog[]
+  shares      Int       @default(0)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Category {
+  id    String  @id @default(auto()) @map("_id") @db.ObjectId
+  name  String  @unique
+  blogs Blog[]
+}
+
+model Comment {
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  content   String
+  blogId    String    @db.ObjectId
+  blog      Blog      @relation(fields: [blogId], references: [id])
+  authorId  String    @db.ObjectId
+  author    User      @relation(fields: [authorId], references: [id])
+  createdAt DateTime  @default(now())
+}
+
+model Like {
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  blogId    String    @db.ObjectId
+  blog      Blog      @relation(fields: [blogId], references: [id])
+  userId    String    @db.ObjectId
+  user      User      @relation(fields: [userId], references: [id])
+  createdAt DateTime  @default(now())
+
+  @@unique([blogId, userId])
+}
+
+model SavedBlog {
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  blogId    String    @db.ObjectId
+  blog      Blog      @relation(fields: [blogId], references: [id])
+  userId    String    @db.ObjectId
+  user      User      @relation(fields: [userId], references: [id])
+  createdAt DateTime  @default(now())
+
+  @@unique([blogId, userId])
+}
+
+model UserPreference {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  userId      String    @unique @db.ObjectId
+  user        User      @relation(fields: [userId], references: [id])
+  categories  String[]  @db.ObjectId
+  darkMode    Boolean   @default(false)
+}

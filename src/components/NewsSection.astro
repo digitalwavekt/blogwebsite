@@ -1,0 +1,23 @@
+---
+import { getLatestNews } from '../lib/news';
+
+const news = await getLatestNews();
+---
+
+<div class="bg-white rounded-lg shadow-md p-6">
+  <h2 class="text-xl font-bold mb-4">Latest News</h2>
+  <div class="space-y-4">
+    {news.map((article) => (
+      <article class="border-b border-gray-200 pb-4 last:border-0">
+        <h3 class="font-semibold">
+          <a href={article.url} target="_blank" rel="noopener noreferrer" class="hover:text-blue-600">
+            {article.title}
+          </a>
+        </h3>
+        <p class="text-sm text-gray-600 mt-1">{article.description}</p>
+        <span class="text-xs text-gray-500 mt-2 block">{article.source.name}</span>
+      </article>
+    ))}
+  </div>
+</div>
+---
